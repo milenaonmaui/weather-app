@@ -16,6 +16,10 @@ body{
     font-family: 'Oswald', sans-serif;
 }
 
+.hidden {
+    display: none;
+}
+
 .holder{
 
 }

@@ -2,13 +2,14 @@
 
 const API_KEY = '5107f2e7c18d313fdf274b051884c517'
 const baseURL = 'http://api.openweathermap.org/data/2.5/forecast?zip='
+const month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]  
+
 //API CALL
 //http://api.openweathermap.org/data/2.5/forecast?zip=96732&units=imperial&appid=5107f2e7c18d313fdf274b051884c517
 
 // Create a new date instance dynamically with JS
 let d = new Date();
-let newDate = d.getMonth()+'.'+ d.getDate()+'.'+ d.getFullYear();
-const data = {temperature: 80, date: newDate, userResponse: "Fake new"}
+let newDate = month[d.getMonth()]+' '+ d.getDate()+','+ d.getFullYear();
 const form = document.getElementById('form');
 let res = {}
 
@@ -18,9 +19,13 @@ const handleSubmit = (e) => {
     const userFeelings = document.getElementById('feelings').value
     getWeatherData(baseURL, zip, API_KEY)
     .then(function(response){
-        console.log("In then ", response.city.name, response.list[0].main.temp, userFeelings)
-        postData('/addData', {temperature: response.list[0].main.temp, date: newDate, userResponse: userFeelings} )
+        postData('/addData', {temp: response.list[0].main.temp, date: newDate, userResponse: userFeelings})
+        .then(function(data){
+            console.log("In then, data is ", data)
+            updateUI(data)
+        })
     })
+    
 }
 
 const getWeatherData = async (baseURL, zip, API_KEY) =>{ 
@@ -61,5 +66,15 @@ const postData = async(url='', data = {}) => {
     }
 }
 
+const updateUI = (data = {}) => {
+    console.log("In update UI, data: ", data)
+    document.getElementById('entryHolder').classList.remove("hidden");
+    document.getElementById('date').innerText = data.date;
+    document.getElementById('temp').innerText = data.temp;
+    document.getElementById('content').innerText = data.userResponse;
+    
+    document.getElementById('zip').value = '';
+    document.getElementById('feelings').value = '';
+}
 form.addEventListener('submit', handleSubmit);
 //postData('/addData', data)
