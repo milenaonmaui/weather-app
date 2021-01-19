@@ -62,6 +62,7 @@ input, textarea{
     background-color: aquamarine;
     color: rgb(19, 11, 54);
     min-height: 50px;
+    max-width: 520px;
     padding: 10px;
 }
 /* Reset style for HTML element on active to have no border*/
