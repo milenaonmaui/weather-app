@@ -4,14 +4,10 @@ const API_KEY = '5107f2e7c18d313fdf274b051884c517'
 const baseURL = 'http://api.openweathermap.org/data/2.5/forecast?zip='
 const month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]  
 
-//API CALL
-//http://api.openweathermap.org/data/2.5/forecast?zip=96732&units=imperial&appid=5107f2e7c18d313fdf274b051884c517
-
 // Create a new date instance dynamically with JS
 let d = new Date();
 let newDate = month[d.getMonth()]+' '+ d.getDate()+','+ d.getFullYear();
-const form = document.getElementById('form');
-let res = {}
+const button = document.getElementById('generate');
 
 const handleSubmit = (e) => {
     e.preventDefault();
@@ -20,10 +16,12 @@ const handleSubmit = (e) => {
     getWeatherData(baseURL, zip, API_KEY)
     .then(function(response){
         postData('/addData', {temp: response.list[0].main.temp, date: newDate, userResponse: userFeelings})
-        .then(function(data){
-            console.log("In then, data is ", data)
-            updateUI(data)
-        })
+        .then(
+            getData('/getData')
+            .then(function(data){
+                updateUI(data)
+            })
+        )
     })
     
 }
@@ -33,17 +31,11 @@ const getWeatherData = async (baseURL, zip, API_KEY) =>{
     const url = baseURL + zip + '&units=imperial&appid=' + API_KEY;
     const request = await fetch(url);
     try {
-    // Transform into JSON
-    const response = await request.json()
-    
-    console.log("Response: ", response.city.name, response.list[0].main.temp )
-    //alert(`response received ${response.list[0].main.temp}`);
-    res=response;
-    return response;
+        const response = await request.json()
+        return response;
     }
     catch(error) {
-      console.log("error", error);
-      // appropriately handle the error
+        console.log("error", error);
     }
 }
 
@@ -59,22 +51,30 @@ const postData = async(url='', data = {}) => {
     });
     try {
         const newData = await res.json();
-        console.log(newData)
         return newData
     } catch(error) {
         console.log(error)
     }
 }
 
-const updateUI = (data = {}) => {
+const getData = async(url='') => {
+    const request = await fetch(url);
+    try {
+        const response = await request.json();
+        return response;
+    } catch(error) {
+        console.log("Error getting data from server ", error)
+
+    }
+}
+
+const updateUI = (data={}) => {
     console.log("In update UI, data: ", data)
-    document.getElementById('entryHolder').classList.remove("hidden");
-    document.getElementById('date').innerText = data.date;
-    document.getElementById('temp').innerText = data.temp;
-    document.getElementById('content').innerText = data.userResponse;
-    
+    document.getElementById('date').innerHTML = '<b>Date: </b>' + data.date;
+    document.getElementById('temp').innerHTML = '<b>Temperature: </b>' + data.temp + '&deg' + 'F' ;
+    document.getElementById('content').innerHTML = '<b>My feelings: </b>' + data.userResponse;
+    //clear entry values so user can initiate another call
     document.getElementById('zip').value = '';
     document.getElementById('feelings').value = '';
 }
-form.addEventListener('submit', handleSubmit);
-//postData('/addData', data)
+button.addEventListener('click', handleSubmit);
