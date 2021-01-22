@@ -54,7 +54,7 @@ const getData = async(url='', data={}) => {
 
 const updateUI = (data={}) => {
     console.log("UI data", data)
-    document.getElementById('date').innerHTML = `<b>${data.city}</b>   <b>Date: </b> ${data.date}`;
+    document.getElementById('date').innerHTML = `<b>City:</b> ${data.city}    <b>Date: </b> ${data.date}`;
     document.getElementById('temp').innerHTML = '<b>Temperature: </b>' + data.temp + '&deg' + 'F' ;
     document.getElementById('content').innerHTML = '<b>My feelings: </b>' + data.userResponse;
     //clear entry values so user can initiate another call
