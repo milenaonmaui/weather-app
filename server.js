@@ -1,9 +1,10 @@
 // Setup empty JS object to act as endpoint for all routes
+require('dotenv').config()
 const API_KEY = process.env.API_KEY
 const baseURL = 'http://api.openweathermap.org/data/2.5/forecast?zip='
 
 projectData = {zip: 90000};
-
+const fetch = require('node-fetch')
 // Require Express to run server and routes
 const express = require('express');
 
@@ -22,19 +23,19 @@ app.use(cors())
 app.use(express.static('website'));
 
 // Setup Server
-const port = 8000;
+const port = 3000;
 const server = app.listen(port, () => {
     console.log(`Server running on port ${port}`)
 })
 
 app.get('/getData', function(req, res){
-    console.log("Inside getData ")
     getWeatherData(baseURL, projectData.zip, API_KEY)
         .then(function(response){
             projectData.temp = response.list[0].main.temp;
-            projectData.city = 'Kahului';
+            projectData.city = response.city.name;
+            res.send(projectData)
         });
-    res.send(projectData)
+    
 })
 
 app.post('/addData', addData)
@@ -47,15 +48,13 @@ function addData(req, res) {
     res.send(projectData)
 }
 
-const getWeatherData = async (baseURL, zip=90000, API_KEY) =>{ 
-    
+const getWeatherData = async(baseURL, zip=90000, API_KEY) =>{ 
     const url = baseURL + zip + '&units=imperial&appid=' + API_KEY;
-    const request = await fetch(url);
     try {
-        const response = await request.json()
-        return response;
-    }
-    catch(error) {
-        console.log("error", error);
-    }
+        const response = await fetch(url)
+        const json = await response.json()
+        return json;
+    } catch (error) {
+        console.log(error);
+    }   
 }

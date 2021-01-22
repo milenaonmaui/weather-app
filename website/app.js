@@ -44,6 +44,7 @@ const getData = async(url='', data={}) => {
     const request = await fetch(url)
     try {
         const response = await request.json();
+        console.log("Data response ", response)
         return response;
     } catch(error) {
         console.log("Error getting data from server ", error)
@@ -53,7 +54,7 @@ const getData = async(url='', data={}) => {
 
 const updateUI = (data={}) => {
     console.log("UI data", data)
-    document.getElementById('date').innerHTML = data.city + '<b>Date: </b>' + data.date;
+    document.getElementById('date').innerHTML = `<b>${data.city}</b>   <b>Date: </b> ${data.date}`;
     document.getElementById('temp').innerHTML = '<b>Temperature: </b>' + data.temp + '&deg' + 'F' ;
     document.getElementById('content').innerHTML = '<b>My feelings: </b>' + data.userResponse;
     //clear entry values so user can initiate another call
